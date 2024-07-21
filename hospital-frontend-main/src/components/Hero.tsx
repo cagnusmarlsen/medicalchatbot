@@ -17,17 +17,26 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import  Chat  from "@/components/Chat";
-import {  useState } from "react";
-import { CalendarIcon, MenuIcon, SearchIcon, UserIcon, MessageCircleIcon, HospitalIcon, LayoutDashboardIcon, SettingsIcon } from "@/icons/Icons";
+import Chat from "@/components/Chat";
+import { useState } from "react";
+import {
+  CalendarIcon,
+  MenuIcon,
+  SearchIcon,
+  UserIcon,
+  MessageCircleIcon,
+  HospitalIcon,
+  LayoutDashboardIcon,
+  SettingsIcon,
+} from "@/icons/Icons";
 import { Link } from "react-router-dom";
 
 export default function Hero(props: any) {
-    const [toggleChat, setToggleChat] = useState(false);
+  const [toggleChat, setToggleChat] = useState(false);
 
   const handleToggle = () => {
-    setToggleChat(!toggleChat)
-  }
+    setToggleChat(!toggleChat);
+  };
 
   const patientData = props.patientData;
   const doctorData = patientData.doctor;
@@ -113,15 +122,7 @@ export default function Hero(props: any) {
                 variant="outline"
                 size="icon"
                 className="overflow-hidden rounded-full"
-              >
-                <img
-                  src="/placeholder.svg"
-                  width={36}
-                  height={36}
-                  alt="Avatar"
-                  className="overflow-hidden rounded-full"
-                />
-              </Button>
+              ></Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
@@ -134,7 +135,11 @@ export default function Hero(props: any) {
           </DropdownMenu>
         </header>
         <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-          <div className={`grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 text-left ${toggleChat ? 'blur-sm' : ''}`}>
+          <div
+            className={`grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 text-left ${
+              toggleChat ? "blur-sm" : ""
+            }`}
+          >
             <Card>
               <CardHeader>
                 <CardTitle>Profile</CardTitle>
@@ -168,36 +173,21 @@ export default function Hero(props: any) {
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle>
-                <Link to="/viewInteractions" state={{patientId: patientData.patientId}}>
-                    Interactions
-                </Link>
-                </CardTitle>
+                <CardTitle>Interactions</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-4">
                 <div className="flex items-center gap-4">
-                  <Avatar>
-                    <AvatarImage src="/placeholder-user.jpg" />
-                    <AvatarFallback>DR</AvatarFallback>
-                  </Avatar>
-                  <div className="grid gap-1">
-                    <div className="font-semibold">Dr. Jane Smith</div>
-                    <div className="font-normal text-gray-500">
-                      Family Medicine
-                    </div>
-                  </div>
+                  <p>Click to view past interactions with the chatbot-</p>
                 </div>
-                <div className="grid gap-1">
-                  <div className="font-normal text-gray-500">Last Visit</div>
-                  <div>June 15, 2023</div>
-                </div>
-                <div className="grid gap-1">
-                  <div className="font-normal text-gray-500">Reason</div>
-                  <div>Annual Checkup</div>
-                </div>
-                <div className="grid gap-1">
-                  <div className="font-normal text-gray-500">Notes</div>
-                  <div>Everything looks good, no concerns.</div>
+                <div className="flex justify-center pt-12">
+                  <Button variant="default" size="lg">
+                    <Link
+                      to="/viewInteractions"
+                      state={{ patientId: patientData.patientId }}
+                    >
+                      View
+                    </Link>
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -234,7 +224,7 @@ export default function Hero(props: any) {
                 </div>
               </CardContent>
             </Card>
-            {/* <Card>
+            <Card>
               <CardHeader>
                 <CardTitle>Upcoming Appointments</CardTitle>
               </CardHeader>
@@ -264,12 +254,20 @@ export default function Hero(props: any) {
                   <div>Follow-up Visit</div>
                 </div>
               </CardContent>
-            </Card> */}
+            </Card>
           </div>
-          <div className="fixed left-1/2 -translate-x-1/2 w-full max-w-4xl z-30" >    
-            {toggleChat ? <Chat toggle={handleToggle} patientData={patientData}></Chat> : <></>}  
+          <div className="fixed left-1/2 -translate-x-1/2 w-full max-w-4xl z-30">
+            {toggleChat ? (
+              <Chat toggle={handleToggle} patientData={patientData}></Chat>
+            ) : (
+              <></>
+            )}
           </div>
-          <Button variant="ghost" onClick={handleToggle} className="fixed bottom-4 right-4 rounded-full border-black">
+          <Button
+            variant="ghost"
+            onClick={handleToggle}
+            className="fixed bottom-4 right-4 rounded-full border-black"
+          >
             <MessageCircleIcon className="h-6 w-6" />
           </Button>
         </main>
