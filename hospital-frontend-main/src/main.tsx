@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 
 import './index.css'
+import ViewInteractions from './components/ViewInteractions.tsx';
 
 const router = createBrowserRouter([
   {
@@ -17,6 +18,10 @@ const router = createBrowserRouter([
   {
     path: "/:id",
     element: <App></App>,
+  },
+  {
+    path: "/viewInteractions",
+    element: <ViewInteractions></ViewInteractions>
   }
 ]);
 

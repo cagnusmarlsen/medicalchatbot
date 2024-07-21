@@ -1,16 +1,71 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Button } from "./ui/button"
+import { Textarea } from "./ui/textarea"
 
 export default function Component(props) {
   const [message, setMessage] = useState("")
-  const handleSubmit = (e: any) => {
+  const [messages, setMessages] = useState<{ sender: string; text: string }[]>([])
+  const [isNewInteraction, setIsNewInteraction] = useState(true);
+  const [currentInteractionId, setCurrentInteractionId] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const messageEndRef = useRef<HTMLDivElement | null>(null);
+
+  const scrollToBottom = () => {
+    if (messageEndRef.current) {
+      messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const handleSubmit = async (e: any) => {
     e.preventDefault()
-    if (message.trim() !== "") {
-      <div className="flex justify-end">
-        <div className="bg-blue-100 text-blue-800 p-2 rounded-lg">{message}</div>
-      </div>
-      setMessage("")
+
+    setMessages(prevMessages => [...prevMessages, { sender: 'user', text: message }]);
+    setMessage("");
+    setLoading(true);
+
+    try { 
+      let data: any;
+
+      if (isNewInteraction) {
+          const res = await fetch("http://localhost:3000/interactions/new", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              patientId: props.patientData.patientId,
+              text: message
+            })
+          });
+          data = await res.json();
+          setIsNewInteraction(false);
+          setCurrentInteractionId(data.interactionId);
+      } else {
+          const res = await fetch("http://localhost:3000/interactions/conversation", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              patientId: props.patientData.patientId,
+              interactionId: currentInteractionId,
+              text: message
+            })
+          });
+          data = await res.json();
+      }
+  
+      setMessages(prevMessages => [...prevMessages, { sender: 'ai', text: data.response.text }]);
+    } catch (error) {
+        console.log("Error:", error);
+    }
+    finally {
+        setLoading(false);
     }
   }
   const handleKeyDown = (e: any) => {
@@ -20,38 +75,37 @@ export default function Component(props) {
   }
   return (
     <div className="rounded-lg shadow-lg">
-      <div className="flex justify-between bg-black text-white text-center py-2 rounded-t-lg"> 
-        <div className="ml-auto">
+      <div className="flex bg-black text-white text-center py-2 rounded-t-lg"> 
+        <div className="ml-auto pr-4">
             <Button variant="ghost" size="sm" onClick={props.toggle}>Close</Button>
         </div>
       </div>
-      <div className="p-4 space-y-4 bg-white">
-        <div className="flex justify-end">
-          <div className="bg-blue-100 text-blue-800 p-2 rounded-lg">I have a question</div>
-        </div>
-        <div className="flex items-start space-x-2">
-          <div className="space-y-1">
-            <p className="text-xs text-gray-500">John Newman</p>
-            <div className="bg-gray-100 p-2 rounded-lg">
-              <p>Sure thing!</p>
-            </div>
-            <div className="bg-gray-100 p-2 rounded-lg">
-              <p>What is your question?</p>
+      <div className="h-60 overflow-y-auto bg-white">
+        {messages.length === 0 && <div className="flex justify-center py-4">What do you want to know?</div>}
+        {messages.map((msg, index) => (
+          <div key={index} className={`py-2 px-4 ${msg.sender === 'user' ? 'text-right' : 'text-left'}`}>
+            <div className={`inline-block px-4 py-2 rounded-lg ${msg.sender === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-black'}`}>
+              {msg.text}
             </div>
           </div>
+        ))}
+        {loading && (
+        <div className="flex justify-center py-4">
+          <div className="inline-block px-4 py-2 rounded-lg bg-gray-300 text-black">
+            Bot is thinking...
+          </div>
         </div>
-        <div className="flex justify-end" />
+      )}
+
+         <div ref={messageEndRef}/>
       </div>
-      <form onSubmit={handleSubmit} className="p-2 bg-gray-100 rounded-b-lg">
-        <input
-          type="text"
+        <Textarea 
           placeholder="Enter your query..."
-          className="w-full p-2 bg-white rounded-lg border border-gray-300"
+          className="p-2 bg-white rounded-lg border border-gray-400"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
         />
-      </form>
     </div>
   )
 }

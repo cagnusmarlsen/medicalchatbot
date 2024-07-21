@@ -20,6 +20,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import  Chat  from "@/components/Chat";
 import {  useState } from "react";
 import { CalendarIcon, MenuIcon, SearchIcon, UserIcon, MessageCircleIcon, HospitalIcon, LayoutDashboardIcon, SettingsIcon } from "@/icons/Icons";
+import { Link } from "react-router-dom";
 
 export default function Hero(props: any) {
     const [toggleChat, setToggleChat] = useState(false);
@@ -133,7 +134,7 @@ export default function Hero(props: any) {
           </DropdownMenu>
         </header>
         <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 text-left">
+          <div className={`grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 text-left ${toggleChat ? 'blur-sm' : ''}`}>
             <Card>
               <CardHeader>
                 <CardTitle>Profile</CardTitle>
@@ -167,7 +168,11 @@ export default function Hero(props: any) {
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle>Interactions</CardTitle>
+                <CardTitle>
+                <Link to="/viewInteractions" state={{patientId: patientData.patientId}}>
+                    Interactions
+                </Link>
+                </CardTitle>
               </CardHeader>
               <CardContent className="grid gap-4">
                 <div className="flex items-center gap-4">
@@ -261,8 +266,8 @@ export default function Hero(props: any) {
               </CardContent>
             </Card> */}
           </div>
-          <div className="fixed left-1/2 -translate-x-1/2 w-full max-w-2xl z-30">
-            {toggleChat ? <Chat toggle={handleToggle}></Chat> : <></>}  
+          <div className="fixed left-1/2 -translate-x-1/2 w-full max-w-4xl z-30" >    
+            {toggleChat ? <Chat toggle={handleToggle} patientData={patientData}></Chat> : <></>}  
           </div>
           <Button variant="ghost" onClick={handleToggle} className="fixed bottom-4 right-4 rounded-full border-black">
             <MessageCircleIcon className="h-6 w-6" />
